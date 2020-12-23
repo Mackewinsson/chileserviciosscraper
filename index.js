@@ -1,14 +1,24 @@
+//Request
 const request = require("request");
+// RequestPromise
 const requestPromise = require("request-promise");
+// Cheerio $
 const cheerio = require("cheerio");
+//File system
 const fs = require("fs");
+// Json2csv
 const { Parser } = require("json2csv");
+// Colors
+const colors = require("colors");
 
+// Empty array declaration
 let empresasArray = [];
 let paginationArray = [];
 let resultsObject = [];
 
+//Autoexcutable annonimous function
 (async () => {
+  //Try block
   try {
     let response = await requestPromise(
       "https://chileservicios.com/industrias/tecnologias-de-la-informacion/"
@@ -31,8 +41,10 @@ let resultsObject = [];
         );
       }
     }
+
     console.log(
-      `Pagination ARRAY has ${paginationArray.length} LINKS to scrape`
+      `Pagination ARRAY has ${paginationArray.length} LINKS to scrape`.bgGreen
+        .black
     );
 
     // HTTP REQUEST TO PAGINATION TO GET EACH ITEM'S LINK
@@ -44,7 +56,9 @@ let resultsObject = [];
         empresasArray.push($(this).attr("href"));
       });
     }
-    console.log(`Empresas ARRAY has ${empresasArray.length} LINKS to scrape`);
+    console.log(
+      `Empresas ARRAY has ${empresasArray.length} LINKS to scrape`.yellow
+    );
 
     // SCRAPE ALL THE DATA
     for (let url of empresasArray) {
@@ -82,9 +96,9 @@ let resultsObject = [];
       // CREATE JSONFILE
       let data = JSON.stringify(resultsObject);
       fs.writeFileSync("resultsObject.json", data);
-      console.log(`Item scraped`);
+      console.log(`Item scraped ✅`.green);
     }
-    console.log("Scrapped Successfull");
+    console.log("Scrapped Successfull".bgGreen.black);
     const fields = ["titulo", "telefono", "correo", "pagina", "descripcion"];
 
     // I SPECIFY THE FIELDS THAT I NEED
@@ -98,7 +112,7 @@ let resultsObject = [];
     const csv = json2csvParser.parse(resultsObject);
     // const ramdom = Math.floor(Math.random() * (1000000 - 100)) + 100;
     fs.writeFileSync(`./results/results.csv`, csv, "utf-8");
-    console.log("Done JSON to CSV...");
+    console.log("Done JSON to CSV...".bgGreen.black);
   } catch (err) {
     console.error(err);
   }
